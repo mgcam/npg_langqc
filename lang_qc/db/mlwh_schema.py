@@ -18,9 +18,12 @@
 # @author mgcam <mg8@sanger.ac.uk>
 
 import datetime
+import decimal
 from typing import List, Optional
 
 from sqlalchemy import (
+    DECIMAL,
+    BigInteger,
     Computed,
     DateTime,
     Float,
@@ -33,6 +36,7 @@ from sqlalchemy import (
 from sqlalchemy.dialects.mysql import (
     BIGINT,
     CHAR,
+    DATETIME,
     INTEGER,
     SMALLINT,
     TEXT,
@@ -187,6 +191,71 @@ class Sample(Base):
 
     pac_bio_run: Mapped[List["PacBioRun"]] = relationship(
         "PacBioRun", back_populates="sample"
+    )
+
+
+class Aliquot(Base):
+    __tablename__ = "aliquot"
+    __table_args__ = ({"mysql_collate": "utf8_unicode_ci"},)
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    id_lims: Mapped[str] = mapped_column(
+        VARCHAR(255),
+        nullable=False,
+        comment="The LIMS system that the aliquot was created in",
+    )
+    aliquot_uuid: Mapped[str] = mapped_column(
+        VARCHAR(255),
+        nullable=False,
+        comment="The UUID of the aliquot in the LIMS system",
+    )
+    aliquot_type: Mapped[str] = mapped_column(
+        VARCHAR(255), nullable=False, comment="The type of the aliquot"
+    )
+    source_type: Mapped[str] = mapped_column(
+        VARCHAR(255), nullable=False, comment="The type of the source of the aliquot"
+    )
+    source_barcode: Mapped[str] = mapped_column(
+        VARCHAR(255), nullable=False, comment="The barcode of the source of the aliquot"
+    )
+    sample_name: Mapped[str] = mapped_column(
+        VARCHAR(255),
+        nullable=False,
+        comment="The name of the sample that the aliquot was created from",
+    )
+    used_by_type: Mapped[str] = mapped_column(
+        VARCHAR(255),
+        nullable=False,
+        comment="The type of the entity that the aliquot is used by",
+    )
+    used_by_barcode: Mapped[str] = mapped_column(
+        VARCHAR(255),
+        nullable=False,
+        comment="The barcode of the entity that the aliquot is used by",
+    )
+    volume: Mapped[decimal.Decimal] = mapped_column(
+        DECIMAL(10, 2), comment="The volume of the aliquot (uL)"
+    )
+    last_updated: Mapped[datetime.datetime] = mapped_column(
+        DATETIME(fsp=6),
+        nullable=False,
+        comment="The date and time that the aliquot was last updated",
+    )
+    recorded_at: Mapped[datetime.datetime] = mapped_column(
+        DATETIME(fsp=6),
+        nullable=False,
+        comment="The date and time that the aliquot was recorded",
+    )
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DATETIME(fsp=6),
+        nullable=False,
+        comment="The date and time that this record was created",
+    )
+    concentration: Mapped[Optional[decimal.Decimal]] = mapped_column(
+        DECIMAL(10, 2), comment="The concentration of the aliquot (ng/ul)"
+    )
+    insert_size: Mapped[Optional[int]] = mapped_column(
+        Integer, comment="The size of the insert in base pairs"
     )
 
 

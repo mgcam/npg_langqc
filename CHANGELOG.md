@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   (added NOT NULL constraints and table-level collation, neither was picked up
   automatically).
 
+### Added
+
+* A class for 'aliquot' table is added to ml warehouse ORM.
+
 ## [2.4.0] - 2024-10-17
 
 ### Added
